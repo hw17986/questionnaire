@@ -27,6 +27,9 @@
 				list: []
 			}
 		},
+		onShow() {
+			this.getPageList()
+		},
 		onPullDownRefresh() {
 			console.log('刷新')
 			setTimeout(() => {
@@ -38,17 +41,29 @@
 				uni.navigateTo({
 					url: `../details/details?id=${id}`
 				})
+			},
+			getPageList(){
+				pageList({
+					pageIndex: 0
+				}).then((data) => {
+					console.log('请求后', data);
+					let listArr = [];
+					if(data.object.list.length > 0){
+						for(let i = 0; i < data.object.list.length; i++){
+							if(data.object.list[i].status == 1){
+								listArr.push(data.object.list[i])
+							}
+						}
+					}
+					this.list = listArr;
+				}).catch((error) => {
+					console.log('失败', error);
+				});
 			}
+			
 		},
 		mounted() {
-			pageList({
-				pageIndex: 0
-			}).then((data) => {
-				console.log('请求后', data);
-				this.list = data.object.list;
-			}).catch((error) => {
-				console.log('失败', error);
-			});
+			this.getPageList();
 		}
 	}
 </script>

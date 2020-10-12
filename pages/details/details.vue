@@ -45,9 +45,31 @@
 					})
 				} else {
 					// 提交答案id集合
-					submitAnswer({
-						answers: thisResultArr.toString()
-					}).then((res) => {
+					
+					// uni.request({
+					//     url: 'http://120.76.124.237:8091/api/applet/submitAnswer', //仅为示例，并非真实接口地址。
+					// 	method:'POST',
+					//     data: thisResultArr,
+					//     header: {
+					//         'Content-Type': 'application/json' //自定义请求头信息
+					//     },
+					//     success: (res) => {
+					//         console.log(res.data);
+					// 		uni.showModal({
+					// 			title: '提示',
+					// 			content: '您的答卷已经提交感谢您的参与！',
+					// 			showCancel: false,
+					// 			success: function(res) {
+					// 				let page = getCurrentPages().length; // //当前页面栈
+					// 				uni.navigateBack({
+					// 					delta: page
+					// 				})
+					// 			}
+					// 		});
+					//     }
+					// });
+					submitAnswer(thisResultArr).then((res) => {
+						console.log('提交',res)
 						uni.showModal({
 							title: '提示',
 							content: '您的答卷已经提交感谢您的参与！',
@@ -59,6 +81,8 @@
 								})
 							}
 						});
+					}).catch((err) =>{
+						console.log('err',err)
 					})
 				}
 			}
