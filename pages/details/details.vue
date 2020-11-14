@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<swiper class="swiper" :style="{ height: cloneHeight }">
+		<swiper class="swiper" :style="{ height: cloneHeight }" :current="currentNum" @change="changeSwiper">
 			<swiper-item class="swiper-items" v-for="(item, index) in list" :key="`list${index}`">
 				<view class="swiper-item uni-bg-red">
 					<view class="details-name">{{ `${index + 1}，${item.title}` }}</view>
@@ -26,14 +26,21 @@
 				list: [],
 				resultArr: [],  // 选中的每项id
 				current: null,
-				cloneHeight: '100%'
+				cloneHeight: '100%',
+				currentNum: 0
 			};
 		},
 		methods: {
+			changeSwiper(event) {
+				this.currentNum = event.detail.current;
+			},
 			radioChange(evt, index) {
 				console.log(evt, index)
-				this.resultArr[index] = evt.detail.value;
-				console.log(this.resultArr);
+				this.resultArr[index] = evt.detail.value;;
+				if(this.currentNum >= this.list.length - 1 ) {
+					return;
+				}
+				this.currentNum++;
 			},
 			submitResult() {
 				console.log(this.resultArr);
@@ -46,46 +53,44 @@
 				} else {
 					// 提交答案id集合
 					
-					uni.request({
-					    url: 'http://120.76.124.237:8091/api/applet/submitAnswer', //仅为示例，并非真实接口地址。
-						method:'POST',
-					    data: thisResultArr,
-					    header: {
-					        'Content-Type': 'application/json' //自定义请求头信息
-					    },
-					    success: (res) => {
-					        console.log(res.data);
-							uni.showModal({
-								title: '提示',
-								content: '您的答卷已经提交感谢您的参与！',
-								showCancel: false,
-								success: function(res) {
-									let page = getCurrentPages().length; // //当前页面栈
-									uni.navigateBack({
-										delta: page
-									})
-								}
-							});
-					    }
-					});
-					// submitAnswer({
-					// 	answers: thisResultArr
-					// }).then((res) => {
-					// 	console.log('提交',res)
-						// uni.showModal({
-						// 	title: '提示',
-						// 	content: '您的答卷已经提交感谢您的参与！',
-						// 	showCancel: false,
-						// 	success: function(res) {
-						// 		let page = getCurrentPages().length; // //当前页面栈
-						// 		uni.navigateBack({
-						// 			delta: page
-						// 		})
-						// 	}
-						// });
-					// }).catch((err) =>{
-					// 	console.log('err',err)
-					// })
+					// uni.request({
+					//     url: 'http://192.168.1.3:8091/api/applet/submitAnswer', //仅为示例，并非真实接口地址。
+					// 	method:'POST',
+					//     data: thisResultArr,
+					//     header: {
+					//         'Content-Type': 'application/json' //自定义请求头信息
+					//     },
+					//     success: (res) => {
+					//         console.log(res.data);
+					// 		uni.showModal({
+					// 			title: '提示',
+					// 			content: '您的答卷已经提交感谢您的参与！',
+					// 			showCancel: false,
+					// 			success: function(res) {
+					// 				let page = getCurrentPages().length; // //当前页面栈
+					// 				uni.navigateBack({
+					// 					delta: page
+					// 				})
+					// 			}
+					// 		});
+					//     }
+					// });
+					submitAnswer(thisResultArr).then((res) => {
+						console.log('提交',res)
+						uni.showModal({
+							title: '提示',
+							content: '您的答卷已经提交感谢您的参与！',
+							showCancel: false,
+							success: function(res) {
+								let page = getCurrentPages().length; // //当前页面栈
+								uni.navigateBack({
+									delta: page
+								})
+							}
+						});
+					}).catch((err) =>{
+						console.log('err',err)
+					})
 				}
 			}
 		},
@@ -97,6 +102,9 @@
 			.then((data) => {
 				// 题目项
 				this.list = data.object.list;
+				uni.setNavigationBarTitle({
+					title: data.object.title
+				})
 			}).catch((err) => {
 				console.log('详情错误', err)
 			})
