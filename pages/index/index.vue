@@ -1,5 +1,5 @@
 <template>
-<!--	加个注释：首页-->
+<!--	加个注释：首页 修改 修改-->
 	<view class="container">
 		<template v-for="(item, index) in list">
 			<uni-card :is-full="true" :title="item.title" thumbnail="https://img-cdn-qiniu.dcloud.net.cn/new-page/uni.png" :extra="item.date" :note="`答卷数量: ${item.sonNum ? item.sonNum : 0}`" :is-shadow="true" class="uni-card" :key="item.id" @click="goDetails(item.id)"  v-if="index == 0">
